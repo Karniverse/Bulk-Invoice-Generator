@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invoice</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+
+        body {
+            width: 210mm;
+            height: 297mm;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            /* Fallback solid color if gradients/patterns fail */
+            background-color: #3A4A94;
+            background: url('{{pattern_path}}') no-repeat center center fixed;
+            background-size: cover, auto;
+            /* Full coverage */
+            /* background-repeat: no-repeat, repeat; */
+            color: white;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 800px;
+            min-height: 297mm;
+            /* Full A4 height */
+            margin: 0 auto;
+            padding: 30px 40px;
+            background-color: rgba(47, 53, 113, 0.1);
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 0 0 10px;
+        }
+
+        /* Compact spacing for critical sections */
+        .header,
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            /* Reduced margin */
+        }
+
+        .bill-to {
+            margin-top: 30px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .invoice-info {
+            text-align: right;
+        }
+
+        .invoice-date {
+            text-align: right;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            /* Reduced margin */
+            font-size: 18px;
+            /* Slightly smaller font */
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 12px;
+            text-align: left;
+            background: transparent;
+            color: rgb(255, 255, 255);
+        }
+
+        th {
+            background: #f4f4f4;
+            color: rgb(0, 0, 0);
+        }
+
+        .totals {
+            width: 300px;
+            float: right;
+            margin-top: 20px;
+        }
+
+        .totals td {
+            border: 1px solid #ccc;
+            background: transparent;
+            color: rgb(255, 255, 255);
+        }
+
+        .totals .label {
+            text-align: left;
+        }
+
+        .totals .value {
+            text-align: right;
+            font-weight: bold;
+        }
+
+        .payment-info {
+            position: relative;
+            margin-top: 150px;
+            font-size: 16px;
+            /* Adjusted to fit footer */
+        }
+
+        /* Center footer and remove whitespace */
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            /* Center-align text */
+            width: 100%;
+            padding: 0 40px;
+            /* Match container padding */
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>NYMAI LIMITED</h1>
+        <div class="header">
+            <div class="invoice-date">
+                <div>{{ invoice_date }}</div>
+            </div>
+            <div class="bill-to">
+                <div>BILL TO :</div>
+                <div><br></div>
+                <div><strong>{{ company_name }}</strong></div>
+                <div>{{ phone }}</div>
+                <div>{{ company_address }}</div>
+                <div>{{ city }}</div>
+                <div>{{ postal_code }}</div>
+            </div>
+            <div class="invoice-info">
+                <!-- <div>{{ invoice_date }}</div> -->
+                <div>VAT REG: GB712347890</div>
+                <div><strong>INV-{{ invoice_number }}</strong></div>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <!-- <th>Qty</th>
+                    <th>Rate</th> -->
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.description }}</td>
+                    <!-- <td>{{ item.qty }}</td>
+                    <td>{{ item.rate }} GBP</td> -->
+                    <td>£ {{ item.total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <table class="totals">
+            <tr>
+                <td class="label">SUBTOTAL</td>
+                <td class="value">£ {{ subtotal }}</td>
+            </tr>
+            <tr>
+                <td class="label">VAT(20%)</td>
+                <td class="value">£ {{ vat }}</td>
+            </tr>
+            <tr>
+                <td class="label">TOTAL PRICE</td>
+                <td class="value">£ {{ total }}</td>
+            </tr>
+        </table>
+        <div class="payment-info">
+            <div><strong>SEND PAYMENT TO :</strong></div>
+            <div><br></div>
+            <div>Barclays Bank</div>
+            <div>Account No: 23456789</div>
+            <div>Sort Code: 234560</div>
+            <div><a href="mailto:contact@nymai.co.uk" style="color:white;">CONTACT@NYMAI.CO.UK</a></div>
+            <!-- <div class="footer">70 LOMBARD STREET, LONDON EC3 V 9JL</div> -->
+        </div>
+
+        <div class="footer">70 LOMBARD STREET, LONDON EC3 V 9JL</div>
+    </div>
+</body>
+
+</html>

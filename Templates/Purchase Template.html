@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+
+        body {
+            width: 210mm;
+            height: 297mm;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            color: #333;
+            background-color: #ffffff;
+            background: url('{{random_background}}') no-repeat center center fixed;
+            background-size: cover, auto;
+            color: rgb(0, 0, 0);
+            overflow: hidden;
+        }
+
+        .invoice-box {
+            max-width: 800px;
+            margin: auto;
+            border: 1px solid #eee;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .address-block p,
+        .address-block address {
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+        }
+
+        .no-border td {
+            border: none;
+            padding: 4px 0;
+        }
+
+        .footer-section {
+            margin-top: 30px;
+        }
+
+        .footer-section p {
+            margin: 4px 0;
+        }
+
+        .signature-block {
+            margin-top: 60px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="invoice-box">
+        <div class="header">
+            <div>
+                <h1>Invoice</h1>
+                <p><strong>Invoice #:</strong> {{ invoice_number }}</p>
+            </div>
+            <div class="right address-block">
+                <h3>{{ social_media_company }}</h3>
+                <address>
+                    {{ ir_company_address }}<br>
+                    {{ ir_postal_code }}, {{ ir_city }}<br>
+                    Ireland<br>
+                    <!-- Phone: {{ phone }}<br>
+                    Email: {{ email }} -->
+                </address>
+            </div>
+        </div>
+
+        <div class="address-block">
+            <h3>Bill to:</h3>
+            <p><strong>NYMAI Limited</strong></p>
+            <address>70 Lombard Street<br>
+                EC3 V 9JL<br>
+                London, United Kingdom<br>
+            </address>
+        </div>
+
+        <table class="no-border">
+            <tr>
+                <td><strong>Invoice date:</strong> {{ alt_invoice_date }}</td>
+                <td class="right"><strong>Due date:</strong> {{ alt_due_date }}</td>
+            </tr>
+        </table>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ social_adverts_description }}</td>
+                    <td>{{ social_adverts_qty }}</td>
+                    <td>£ {{ social_adverts_total }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="no-border">
+            <tr>
+                <td class="right"><strong>Subtotal:</strong></td>
+                <td class="right">£ {{ social_adverts_total }}</td>
+            </tr>
+            <tr>
+                <td class="right"><strong>VAT (0%):</strong></td>
+                <td class="right">£ 0.00</td>
+            </tr>
+            <tr>
+                <td class="right"><strong>Total:</strong></td>
+                <td class="right">£ {{ social_adverts_total }}</td>
+            </tr>
+            <tr>
+                <td class="right"><strong>Total in words:</strong></td>
+                <td class="right"><em>{{ social_adverts_total_words }}</em></td>
+            </tr>
+        </table>
+
+        <div class="footer-section">
+            <!-- <h4>Additional notes:</h4> -->
+            <p>Thank you for choosing us</p>
+
+            <!-- <h4>Please send the payment to this address:</h4>
+            <p>Bank: {{bank}}</p>
+            <p>Account name: {{account_name}}</p>
+            <p>Account no: {{account_number}}</p>
+
+            <p>If you have any questions concerning this invoice, use the following contact information:</p>
+            <p>Email: {{ email }}</p>
+            <p>Phone: {{ phone }}</p> -->
+        </div>
+
+        <!-- <div class="signature-block">
+            <p><strong>Signature:</strong></p>
+            <img src="{{ signature_path }}" alt="Signature" height="80">
+        </div> -->
+    </div>
+</body>
+
+</html>

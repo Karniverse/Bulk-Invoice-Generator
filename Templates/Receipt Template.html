@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Supermarket Receipt</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background: #f4f4f4;
+            padding: 20px;
+        }
+
+        .receipt,
+        .title-card {
+            max-width: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border: 1px dashed #000;
+        }
+
+        .receipt h2,
+        .receipt p,
+        .title-card p {
+            text-align: center;
+            margin: 5px 0;
+        }
+
+        .title-card h2 {
+            text-align: center;
+            margin: 5px 0;
+            font-family: 'Courier New', Courier, monospace;
+            /* match rest of receipt */
+            font-weight: bold;
+            /* optional */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 4px;
+            border-bottom: 1px dotted #ccc;
+        }
+
+        th {
+            font-weight: bold;
+            border-bottom: 1px solid #000;
+        }
+
+        .totals {
+            margin-top: 10px;
+        }
+
+        .total table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .total td {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            padding: 4px 0;
+        }
+
+        .total .label {
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .total .value {
+            text-align: right;
+            font-weight: bold;
+        }
+
+
+        .total {
+            display: flex;
+            /* justify-content: space-between; */
+            margin-top: 10px;
+            padding-top: 10px;
+            font-weight: bold;
+            border-top: 1px dashed #000;
+            width: 100%;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="title-card">
+        <p>Please tell us how we did today at</p>
+        <p>{{uk_store_site}}</p>
+        <h2>{{uk_store_data["name"]}}</h2>
+        <p>VAT No: {{vat_no}}</p>
+        <p>{{company_address}}<br>{{city}}</p>
+        <p>Receipt No: {{invoice_number}}</p>
+    </div>
+
+    <div class="receipt">
+        <table>
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <!-- <th>Qty</th>
+                    <th>Rate</th> -->
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{fuel_type}}</td>
+                    <!-- <td>{{ fuel_qty }}</td>
+                    <td>{{ fuel_rate }}</td> -->
+                    <td>{{ fuel_total }}0 £</td>
+                </tr>
+                {% for item in uk_store_items %}
+                <tr>
+                    <td>{{ item.description }}</td>
+                    <!-- <td>{{ item.qty }}</td>
+                    <td>{{ item.rate }}</td> -->
+                    <td>{{ item.total }}.00 £</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="total">
+            <table>
+                <tbody>
+                    <tr>
+                        <td class="label">Total</td>
+                        <td class="value">{{ Store_total }}0 £</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <div class="footer">
+            <p>{{alt_invoice_date}} {{uk_time_now}}</p>
+            <p>inclusive of VAT Taxes</p>
+            <p>PLEASE KEEP THIS COPY FOR YOUR RECORDS</p>
+            <p>Thank you for shopping!<br>Visit again!</p>
+        </div>
+    </div>
+</body>
+
+</html>
