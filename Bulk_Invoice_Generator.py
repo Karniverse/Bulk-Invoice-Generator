@@ -354,7 +354,7 @@ def generate_csv(invoices_data, filename="invoices_summary.csv"):
 
 
 # === PDFKit Config ===
-config = pdfkit.configuration(wkhtmltopdf=r"E:\PROJECT\PYTHON\Invoice Generator\wkhtmltox\bin\wkhtmltopdf.exe")
+config = pdfkit.configuration(wkhtmltopdf=r"wkhtmltox\bin\wkhtmltopdf.exe")
 options = {
     'enable-local-file-access': '',
     'page-size': 'A4',
