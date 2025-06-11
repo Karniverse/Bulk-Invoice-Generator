@@ -23,15 +23,16 @@ A powerful Python script for generating randomized invoices in PDF, HTML, and CS
    git clone https://github.com/yourusername/bulk-invoice-generator.git
    cd bulk-invoice-generator
 
-2. Install dependencies:   
+2. Install dependencies:
+    ```bash
     pip install -r requirements.txt
 
 3. Install wkhtmltopdf:
+    ```bash
     Download from wkhtmltopdf.org
-
 Or use package manager:
 
-bash
+```bash
 # Ubuntu/Debian
 sudo apt-get install wkhtmltopdf
 
