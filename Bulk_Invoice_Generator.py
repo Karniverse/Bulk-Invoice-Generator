@@ -11,8 +11,16 @@ import argparse
 
 # === Argument Parser ===
 parser = argparse.ArgumentParser(description="Generate random invoices using a given HTML template.")
-parser.add_argument("count", type=int, help="Number of invoices to generate")
-parser.add_argument("-t", "--template", type=str, required=True, help="Path to the HTML template file")
+parser.add_argument("count", type=int, nargs='?', default=5,  # Changed to make optional with default
+                   help="Number of invoices to generate (default: 5)")
+parser.add_argument("-t", "--template", type=str, default="Templates\Base Template.html",  # Added default
+                   help="Path to the HTML template file (default: base_template.html)")
+parser.add_argument("--html", action="store_true",  # New HTML option
+                   help="Generate HTML output")
+parser.add_argument("--csv", action="store_true",   # New CSV option
+                   help="Generate CSV summary")
+parser.add_argument("--nopdf", action="store_true",  # New no-PDF option
+                   help="Skip PDF generation (only generate HTML/CSV if specified)")
 
 args = parser.parse_args()
 invoice_count = args.count
@@ -293,6 +301,57 @@ def generate_invoice_data():
         
     }
 
+# === CSV Generation Function ===
+def generate_csv(invoices_data, filename="invoices_summary.csv"):
+    import csv
+    
+    # First collect all possible fields from all invoices
+    all_fields = set()
+    for invoice in invoices_data:
+        all_fields.update(invoice.keys())
+    
+    # Remove fields we don't want in CSV
+    exclude_fields = {
+        'signature_path', 'pattern_path', 'random_background',
+        'output_files', 'uk_store_data'  # These will be handled specially
+    }
+    fieldnames = [f for f in all_fields if f not in exclude_fields]
+    
+    # Add our special fields and sort for consistent order
+    fieldnames = sorted(fieldnames) + [
+        'store_name', 'store_tagline', 'output_files'
+    ]
+    
+    with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        
+        for invoice in invoices_data:
+            row = {}
+            # Copy all regular fields
+            for field in fieldnames:
+                if field in invoice:
+                    row[field] = invoice[field]
+            
+            # Handle special fields
+            if 'uk_store_data' in invoice:
+                store_data = invoice['uk_store_data']
+                row['store_name'] = store_data.get('name', '')
+                row['store_tagline'] = store_data.get('tagline', '')
+            
+            # Handle items lists
+            for item_type in ['items', 'uk_store_items']:
+                if item_type in invoice:
+                    row[item_type] = ' | '.join(
+                        f"{i['description']} ({i['qty']} x £{i['rate']})" 
+                        for i in invoice[item_type]
+                    )
+            
+            # Add output files
+            row['output_files'] = ', '.join(invoice.get('output_files', []))
+            
+            writer.writerow(row)
+
 
 # === PDFKit Config ===
 config = pdfkit.configuration(wkhtmltopdf=r"E:\PROJECT\PYTHON\Invoice Generator\wkhtmltox\bin\wkhtmltopdf.exe")
@@ -312,11 +371,36 @@ options = {
 }
 
 # === Generate Invoices ===
+all_invoices_data = []
 for i in range(invoice_count):
     data = generate_invoice_data()
-    html = Template(invoice_template).render(**data)
-    filename = f"{OUTPUT_DIR}/{data['company_name'].replace(' ', '_')}.pdf"
-    pdfkit.from_string(html, filename, configuration=config, options=options)
-    print(f"[✓] Generated {filename}")
+    html_content = Template(invoice_template).render(**data)
+    output_files = []
+    
+    # Generate PDF unless --nopdf is specified
+    if not args.nopdf:
+        pdf_filename = f"{OUTPUT_DIR}/{data['company_name'].replace(' ', '_')}.pdf"
+        pdfkit.from_string(html_content, pdf_filename, configuration=config, options=options)
+        output_files.append(pdf_filename)
+        print(f"[✓] Generated PDF: {pdf_filename}")
+    
+    # Generate HTML if requested
+    if args.html:
+        html_filename = f"{OUTPUT_DIR}/{data['company_name'].replace(' ', '_')}.html"
+        with open(html_filename, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+        output_files.append(html_filename)
+        print(f"[✓] Generated HTML: {html_filename}")
+    
+    # Store data for CSV if requested
+    if args.csv:
+        data['output_files'] = output_files
+        all_invoices_data.append(data)
+
+# Generate CSV summary if requested
+if args.csv:
+    csv_filename = f"{OUTPUT_DIR}/invoices_summary.csv"
+    generate_csv(all_invoices_data, csv_filename)
+    print(f"[✓] Generated CSV summary: {csv_filename}")
 
 print(f"\nAll {invoice_count} invoices saved to '{OUTPUT_DIR}/'")
