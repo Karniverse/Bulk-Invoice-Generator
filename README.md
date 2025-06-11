@@ -141,4 +141,4 @@ The script checks these locations automatically:
   * `inflect`
   
 ## License
-MIT License - See LICENSE file for details.
+MIT License - See [LICENSE](https://raw.githubusercontent.com/Karniverse/Bulk-Invoice-Generator/refs/heads/main/LICENSE). file for details.
