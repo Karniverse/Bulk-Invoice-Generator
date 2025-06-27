@@ -8,6 +8,11 @@ from PIL import Image, ImageDraw, ImageFont
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 import argparse
+# import EAN13 from barcode module
+from barcode import EAN13
+
+# import ImageWriter to generate an image file
+from barcode.writer import ImageWriter
 
 # === Argument Parser ===
 parser = argparse.ArgumentParser(description="Generate random invoices using a given HTML template.")
@@ -30,8 +35,10 @@ SIGNATURE_FONT_PATH = "fonts/PrimeraSignature.ttf"
 pattern_location = "assets/bg.png"
 background_location="assets/backgrounds"
 SIGNATURE_DIR = "signatures"
+BARCODE_DIR = "barcodes"
 OUTPUT_DIR = "invoices"
 os.makedirs(SIGNATURE_DIR, exist_ok=True)
+os.makedirs(BARCODE_DIR, exist_ok=True)
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 uk_time = datetime.now(ZoneInfo("Europe/London"))
@@ -174,6 +181,16 @@ def generate_signature(name, filepath):
     position = ((300 - (bbox[2] - bbox[0])) / 2, (100 - (bbox[3] - bbox[1])) / 2)
     draw.text(position, name, font=font, fill=(0, 0, 0))
     image.save(filepath)
+    
+def generate_barcode(number, filepath):
+    # Now, let's create an object of EAN13 class and 
+    # # pass the number with the ImageWriter() as the 
+    # # writer
+    barcodenumber=f"{int(number):012d}"
+    invoicebarcode = EAN13(barcodenumber, writer=ImageWriter())
+    # Our barcode is ready. Let's save it.
+    invoicebarcode.save(filepath)
+    
 
 def amount_to_words(amount):
     import inflect
@@ -248,9 +265,13 @@ def generate_invoice_data():
 
 
     # Signature
-    signature_file = os.path.join(SIGNATURE_DIR, f"{company_name_clean.replace(' ', '_')}.png")
-    generate_signature(company_name_clean, signature_file)
+    signature_file = os.path.join(SIGNATURE_DIR, f"{company_name_clean.replace(' ', '_')}.png")    
+    generate_signature(company_name_clean, signature_file)    
     signature_path = os.path.abspath(signature_file).replace('\\', '/')
+    
+    # barcode
+    barcode_file = os.path.join(BARCODE_DIR, f"{company_name_clean.replace(' ', '_')}")
+    generate_barcode(str(invoice_number)+invoice_date.strftime('%d%m%y'), barcode_file)
 
     return {
         "uk_time_now":formatted_time,
